@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@chip-sim/board-schema": ["packages/board-schema/src/index.ts"],
+      "@chip-sim/circuit-core": ["packages/circuit-core/src/index.ts"],
+      "@chip-sim/component-library": ["packages/component-library/src/index.ts"],
+      "@chip-sim/spice-compiler": ["packages/spice-compiler/src/index.ts"],
+      "@chip-sim/simulation-results": ["packages/simulation-results/src/index.ts"],
+      "@chip-sim/solver-ngspice": ["packages/solver-ngspice/src/index.ts"]
+    },
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"]
+  },
+  "include": ["apps", "packages", "examples", "scripts", "tests", "*.ts"]
+}

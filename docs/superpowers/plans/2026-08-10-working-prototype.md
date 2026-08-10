@@ -6,7 +6,7 @@
 
 **Architecture:** A sandboxed Electron renderer communicates through a typed preload bridge with the main process. Focused TypeScript workspace packages parse the project, construct a solver-independent canonical circuit, compile it to deterministic SPICE, execute ngspice in an isolated directory, and return typed datasets to the renderer.
 
-**Tech Stack:** Electron 43, electron-vite 5, React 19, TypeScript 7, Zod 4, YAML 2, Vitest 4, Monaco React, XYFlow React, uPlot, npm workspaces, ngspice.
+**Tech Stack:** Electron 37, electron-vite 4, React 19, TypeScript 5.9, Zod 4, YAML 2, Vitest 3, Monaco React, XYFlow React, uPlot, npm workspaces, ngspice.
 
 ---
 

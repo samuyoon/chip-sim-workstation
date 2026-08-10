@@ -1,0 +1,16 @@
+appId: com.chipsim.workstation
+productName: Chip Sim Workstation
+directories:
+  output: dist
+files:
+  - out/**
+extraResources:
+  - from: resources/ngspice
+    to: ngspice
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch: arm64
+  hardenedRuntime: true
+  gatekeeperAssess: false
