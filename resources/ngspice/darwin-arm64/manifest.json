@@ -1,0 +1,21 @@
+{
+  "platform": "darwin-arm64",
+  "version": "** ngspice-46 : Circuit level simulation program",
+  "files": {
+    "ngspice": "bb354b86a87cf404540941b1bc7d8957cb81581eb511bd2960c3dbfb7a7a3fb0",
+    "lib/libfftw3.3.dylib": "5ec5b2a05e30208a85bbdcb9cc70840d216332140c48d884f3a5bd691950f385",
+    "lib/libreadline.8.dylib": "1ec55954d28c06c07a520409f0d500e3503297c8a873a5c637162afe9f7c671f",
+    "lib/libXaw.7.dylib": "84d876b9574de90db3496a42b965db45c88de74c78641de6973ca722876fae03",
+    "lib/libXmu.6.dylib": "32b3078f83079e8ddc87fdff4f1ed117721feaf11f13c0c220fa6cb2d96cca1d",
+    "lib/libXt.6.dylib": "76520a0414b88fb3de737ee8bbe26a744afaeb8a6b87ae5da499d374f79d3bb5",
+    "lib/libXext.6.dylib": "33042767909cdf3ab175c655f766693d48457b92a48a3eb50ac3f4a5b3b38fb8",
+    "lib/libX11.6.dylib": "042e307c357f7d62ad67e66b5462f73258b47b1cded7fcab73be4e034d10c2ac",
+    "lib/libSM.6.dylib": "ab267cacbd3f6acd0ef85ecf5684e5cbe179543e9aec4a6774e049937ce26971",
+    "lib/libICE.6.dylib": "ace66204f7831fd79d8ffd7024c3b603ec2c82f31da029c15452c8adcb229267",
+    "lib/libXpm.4.dylib": "d678a487e770f7fd2a7a4f7ef9dd5a1c1a1b9dc48099b911ace046f6040fe824",
+    "lib/libxcb.1.dylib": "509419bcca4043860db5f24259579656f2ab6e38a65ad201a808e9ae49908254",
+    "lib/libintl.8.dylib": "7e6628118b26b58b57346f3f088b1f87b263c677736ade678f0aced5579ea357",
+    "lib/libXau.6.dylib": "7cde47d0ed5cb3976bc9d0277a3a095684a8b2f24c83f7368bfbe9dbe425bf4d",
+    "lib/libXdmcp.6.dylib": "1a4d6fed4ea008d4d6cc8283d914d3ef744bf9032bb38f98c42c5175a69eaa79"
+  }
+}
