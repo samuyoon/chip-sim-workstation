@@ -32,18 +32,31 @@ describe("buildCircuit", () => {
   it("resolves components, values, and nets", () => {
     const result = buildCircuit(parsed());
     expect(result.ok).toBe(true);
-    expect(result.circuit?.components.find((item) => item.id === "supply")?.parameters.voltage?.siValue).toBe(9);
-    expect(result.circuit?.nets.find((item) => item.name === "rail")?.connections).toHaveLength(2);
+    expect(
+      result.circuit?.components.find((item) => item.id === "supply")
+        ?.parameters.voltage?.siValue,
+    ).toBe(9);
+    expect(
+      result.circuit?.nets.find((item) => item.name === "rail")?.connections,
+    ).toHaveLength(2);
   });
 
   it("rejects an unknown component type", () => {
-    const result = buildCircuit(parsed(boardSource.replace("foundation.resistor", "vendor.unknown")));
-    expect(result.diagnostics.some((item) => item.code === "UNKNOWN_COMPONENT_TYPE")).toBe(true);
+    const result = buildCircuit(
+      parsed(boardSource.replace("foundation.resistor", "vendor.unknown")),
+    );
+    expect(
+      result.diagnostics.some((item) => item.code === "UNKNOWN_COMPONENT_TYPE"),
+    ).toBe(true);
   });
 
   it("rejects an unknown port", () => {
-    const result = buildCircuit(parsed(boardSource.replace("load.positive", "load.wrong")));
-    expect(result.diagnostics.some((item) => item.code === "UNKNOWN_PORT")).toBe(true);
+    const result = buildCircuit(
+      parsed(boardSource.replace("load.positive", "load.wrong")),
+    );
+    expect(
+      result.diagnostics.some((item) => item.code === "UNKNOWN_PORT"),
+    ).toBe(true);
   });
 
   it("requires a ground reference component", () => {
@@ -51,6 +64,8 @@ describe("buildCircuit", () => {
       .replace("  reference:\n    type: foundation.ground\n", "")
       .replace("  - [reference.reference, ground]\n", "");
     const result = buildCircuit(parsed(withoutGround));
-    expect(result.diagnostics.some((item) => item.code === "MISSING_GROUND")).toBe(true);
+    expect(
+      result.diagnostics.some((item) => item.code === "MISSING_GROUND"),
+    ).toBe(true);
   });
 });

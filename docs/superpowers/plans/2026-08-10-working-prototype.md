@@ -38,6 +38,7 @@ tests/e2e/prototype.spec.ts            packaged vertical-slice acceptance
 ### Task 1: Scaffold the typed Electron workspace
 
 **Files:**
+
 - Create: `package.json`
 - Create: `tsconfig.base.json`
 - Create: `vitest.config.ts`
@@ -60,7 +61,9 @@ import { App } from "./App";
 describe("App", () => {
   it("renders the workstation title", () => {
     render(<App />);
-    expect(screen.getByRole("heading", { name: "Chip Sim Workstation" })).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: "Chip Sim Workstation" }),
+    ).toBeVisible();
   });
 });
 ```
@@ -110,6 +113,7 @@ git commit -m "build: scaffold Electron workstation"
 ### Task 2: Parse board YAML and physical units
 
 **Files:**
+
 - Create: `packages/board-schema/src/types.ts`
 - Create: `packages/board-schema/src/units.ts`
 - Create: `packages/board-schema/src/parse-board.ts`
@@ -121,7 +125,10 @@ git commit -m "build: scaffold Electron workstation"
 
 ```ts
 expect(parseQuantity("9 V", "voltage")).toEqual({ siValue: 9, unit: "V" });
-expect(parseQuantity("100 uF", "capacitance")).toEqual({ siValue: 0.0001, unit: "F" });
+expect(parseQuantity("100 uF", "capacitance")).toEqual({
+  siValue: 0.0001,
+  unit: "F",
+});
 expect(() => parseQuantity("9 amps", "voltage")).toThrow("expected voltage");
 ```
 
@@ -150,7 +157,9 @@ connections:
   - [supply.negative, ground]
 `);
 expect(result.ok).toBe(true);
-expect(result.board?.components.supply.type).toBe("foundation.dc_voltage_source");
+expect(result.board?.components.supply.type).toBe(
+  "foundation.dc_voltage_source",
+);
 ```
 
 Also test duplicate YAML keys, malformed endpoints, missing version/name, and source locations for a bad component parameter.
@@ -175,6 +184,7 @@ git commit -m "feat: parse board YAML and physical units"
 ### Task 3: Resolve foundation components into a canonical circuit
 
 **Files:**
+
 - Create: `packages/component-library/src/types.ts`
 - Create: `packages/component-library/src/foundation.ts`
 - Create: `packages/component-library/src/index.ts`
@@ -202,8 +212,15 @@ export interface ComponentDefinition {
   category: "source" | "passive" | "semiconductor" | "reference" | "load";
   ports: Record<string, { domain: "electrical"; required: boolean }>;
   parameters: Record<string, ParameterDefinition>;
-  implementation: SpicePrimitiveImplementation | SpiceSubcircuitImplementation | CompositeImplementation;
-  provenance: { tier: "foundation" | "catalog" | "custom"; confidence: "high" | "medium" | "low"; source: string };
+  implementation:
+    | SpicePrimitiveImplementation
+    | SpiceSubcircuitImplementation
+    | CompositeImplementation;
+  provenance: {
+    tier: "foundation" | "catalog" | "custom";
+    confidence: "high" | "medium" | "low";
+    source: string;
+  };
 }
 ```
 
@@ -229,6 +246,7 @@ git commit -m "feat: build canonical circuits from component definitions"
 ### Task 4: Compile deterministic SPICE netlists
 
 **Files:**
+
 - Create: `packages/spice-compiler/src/types.ts`
 - Create: `packages/spice-compiler/src/identifiers.ts`
 - Create: `packages/spice-compiler/src/compile.ts`
@@ -270,6 +288,7 @@ git commit -m "feat: compile canonical circuits to deterministic SPICE"
 ### Task 5: Execute ngspice and parse typed results
 
 **Files:**
+
 - Create: `packages/simulation-results/src/types.ts`
 - Create: `packages/simulation-results/src/index.ts`
 - Create: `packages/solver-ngspice/src/paths.ts`
@@ -317,6 +336,7 @@ git commit -m "feat: execute bundled ngspice and parse results"
 ### Task 6: Add secure project and simulation IPC
 
 **Files:**
+
 - Create: `apps/desktop/src/shared/ipc.ts`
 - Create: `apps/desktop/src/main/project.ts`
 - Modify: `apps/desktop/src/main/index.ts`
@@ -338,11 +358,15 @@ Use a temporary project to test open, read, save, validate, run, and cancel. Ass
 contextBridge.exposeInMainWorld("chipSim", {
   openProject: () => ipcRenderer.invoke("project:open"),
   readBoard: () => ipcRenderer.invoke("project:read-board"),
-  saveBoard: (source: string) => ipcRenderer.invoke("project:save-board", source),
-  validateBoard: (source: string) => ipcRenderer.invoke("project:validate-board", source),
-  runSimulation: (request: RunRequest) => ipcRenderer.invoke("simulation:run", request),
+  saveBoard: (source: string) =>
+    ipcRenderer.invoke("project:save-board", source),
+  validateBoard: (source: string) =>
+    ipcRenderer.invoke("project:validate-board", source),
+  runSimulation: (request: RunRequest) =>
+    ipcRenderer.invoke("simulation:run", request),
   cancelSimulation: () => ipcRenderer.invoke("simulation:cancel"),
-  onRunUpdate: (listener: (run: SimulationRun) => void) => subscribe("simulation:update", listener),
+  onRunUpdate: (listener: (run: SimulationRun) => void) =>
+    subscribe("simulation:update", listener),
 });
 ```
 
@@ -364,6 +388,7 @@ git commit -m "feat: add secure project and simulation bridge"
 ### Task 7: Build the workstation interface
 
 **Files:**
+
 - Modify: `apps/desktop/src/renderer/App.tsx`
 - Create: `apps/desktop/src/renderer/app.css`
 - Create: `apps/desktop/src/renderer/state/use-workstation.ts`
@@ -408,6 +433,7 @@ git commit -m "feat: build circuit simulation workstation UI"
 ### Task 8: Add the runnable power-transducer example
 
 **Files:**
+
 - Create: `examples/power-transducer/board.yaml`
 - Create: `examples/power-transducer/models/piezo-40khz.model.yaml`
 - Create: `examples/power-transducer/simulations/operating-point.yaml`
@@ -444,6 +470,7 @@ git commit -m "feat: add power and transducer example project"
 ### Task 9: Package and verify the complete prototype
 
 **Files:**
+
 - Create: `tests/e2e/prototype.spec.ts`
 - Create: `scripts/verify-package.mjs`
 - Create: `README.md`

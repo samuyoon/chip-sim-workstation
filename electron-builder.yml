@@ -1,5 +1,6 @@
 appId: com.chipsim.workstation
 productName: Chip Sim Workstation
+asar: true
 directories:
   output: dist
 files:
@@ -14,3 +15,4 @@ mac:
       arch: arm64
   hardenedRuntime: true
   gatekeeperAssess: false
+  identity: null

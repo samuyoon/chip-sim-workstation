@@ -25,11 +25,15 @@ const transient = {
   type: "transient" as const,
   stepSeconds: 0.00001,
   stopSeconds: 0.0001,
-  probes: [{ id: "rail", kind: "voltage" as const, target: "rail" }]
+  probes: [{ id: "rail", kind: "voltage" as const, target: "rail" }],
 };
 
 const roots: string[] = [];
-afterEach(async () => Promise.all(roots.splice(0).map((path) => rm(path, { recursive: true, force: true }))));
+afterEach(async () =>
+  Promise.all(
+    roots.splice(0).map((path) => rm(path, { recursive: true, force: true })),
+  ),
+);
 
 async function fixture(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), "chip-sim-project-"));
@@ -50,11 +54,23 @@ describe("ProjectService", () => {
       completedAt: new Date().toISOString(),
       dataset: {
         axis: { id: "time", label: "time", unit: "s", values: [0, 1] },
-        signals: [{ id: "rail", expression: "v(n_rail)", unit: "V", values: [9, 9], minimum: 9, maximum: 9 }],
-        sampleCount: 2
-      }
+        signals: [
+          {
+            id: "rail",
+            expression: "v(n_rail)",
+            unit: "V",
+            values: [9, 9],
+            minimum: 9,
+            maximum: 9,
+          },
+        ],
+        sampleCount: 2,
+      },
     };
-    const service = new ProjectService({ executablePath: "/unused", runner: async () => completed });
+    const service = new ProjectService({
+      executablePath: "/unused",
+      runner: async () => completed,
+    });
 
     const opened = await service.openProject(root);
     expect(opened.source).toContain("9 V");
@@ -71,7 +87,9 @@ describe("ProjectService", () => {
     const root = await fixture();
     const service = new ProjectService({ executablePath: "/unused" });
     await service.openProject(root);
-    await expect(service.readProjectFile("../secret.txt")).rejects.toThrow("outside the project");
+    await expect(service.readProjectFile("../secret.txt")).rejects.toThrow(
+      "outside the project",
+    );
   });
 
   it("cancels an active run and preserves the last successful run after failure", async () => {
@@ -82,11 +100,25 @@ describe("ProjectService", () => {
       runner: async ({ signal, analysisId }) => {
         invocation += 1;
         if (invocation === 1) {
-          return { id: "good", analysisId, status: "completed", startedAt: "now", completedAt: "now" };
+          return {
+            id: "good",
+            analysisId,
+            status: "completed",
+            startedAt: "now",
+            completedAt: "now",
+          };
         }
-        await new Promise<void>((resolve) => signal?.addEventListener("abort", () => resolve(), { once: true }));
-        return { id: "cancelled", analysisId, status: "cancelled", startedAt: "now", completedAt: "now" };
-      }
+        await new Promise<void>((resolve) =>
+          signal?.addEventListener("abort", () => resolve(), { once: true }),
+        );
+        return {
+          id: "cancelled",
+          analysisId,
+          status: "cancelled",
+          startedAt: "now",
+          completedAt: "now",
+        };
+      },
     });
     await service.openProject(root);
     await service.runSimulation(transient);

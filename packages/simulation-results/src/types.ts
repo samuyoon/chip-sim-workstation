@@ -1,4 +1,10 @@
-export type RunStatus = "queued" | "compiling" | "running" | "completed" | "failed" | "cancelled";
+export type RunStatus =
+  | "queued"
+  | "compiling"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 export interface ResultAxis {
   id: string;
@@ -23,7 +29,12 @@ export interface SimulationDataset {
 }
 
 export interface SimulationFailure {
-  classification: "PROJECT_ERROR" | "COMPILATION_ERROR" | "SOLVER_ERROR" | "PROCESS_ERROR" | "RESULT_PARSE_ERROR";
+  classification:
+    | "PROJECT_ERROR"
+    | "COMPILATION_ERROR"
+    | "SOLVER_ERROR"
+    | "PROCESS_ERROR"
+    | "RESULT_PARSE_ERROR";
   message: string;
   details?: string;
 }

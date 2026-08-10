@@ -1,0 +1,5 @@
+dist
+out
+node_modules
+resources/ngspice/darwin-arm64
+package-lock.json

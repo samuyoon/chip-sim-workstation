@@ -15,14 +15,16 @@ export interface RunNgspiceOptions {
   signal?: AbortSignal;
 }
 
-export async function runNgspice(options: RunNgspiceOptions): Promise<SimulationRun> {
+export async function runNgspice(
+  options: RunNgspiceOptions,
+): Promise<SimulationRun> {
   const startedAt = new Date().toISOString();
   const base: SimulationRun = {
     id: randomUUID(),
     analysisId: options.analysisId,
     status: "running",
     startedAt,
-    netlist: options.compiled.netlist
+    netlist: options.compiled.netlist,
   };
   const workingDirectory = await mkdtemp(join(tmpdir(), "chip-sim-"));
   const netlistPath = join(workingDirectory, "circuit.cir");
@@ -34,10 +36,13 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
       ["-b", "circuit.cir"],
       workingDirectory,
       options.timeoutMs,
-      options.signal
+      options.signal,
     );
     const completedAt = new Date().toISOString();
-    const diagnostics = { stdout: processResult.stdout, stderr: processResult.stderr };
+    const diagnostics = {
+      stdout: processResult.stdout,
+      stderr: processResult.stderr,
+    };
 
     if (processResult.cancelled) {
       return { ...base, ...diagnostics, status: "cancelled", completedAt };
@@ -48,7 +53,10 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
         ...diagnostics,
         status: "failed",
         completedAt,
-        failure: { classification: "PROCESS_ERROR", message: `ngspice exceeded ${options.timeoutMs} ms` }
+        failure: {
+          classification: "PROCESS_ERROR",
+          message: `ngspice exceeded ${options.timeoutMs} ms`,
+        },
       };
     }
     if (processResult.error) {
@@ -57,7 +65,10 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
         ...diagnostics,
         status: "failed",
         completedAt,
-        failure: { classification: "PROCESS_ERROR", message: processResult.error.message }
+        failure: {
+          classification: "PROCESS_ERROR",
+          message: processResult.error.message,
+        },
       };
     }
     if (processResult.exitCode !== 0) {
@@ -69,13 +80,16 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
         failure: {
           classification: "SOLVER_ERROR",
           message: `ngspice exited with code ${processResult.exitCode}`,
-          details: processResult.stderr || processResult.stdout
-        }
+          details: processResult.stderr || processResult.stdout,
+        },
       };
     }
 
     try {
-      const source = await readFile(join(workingDirectory, options.compiled.outputFile), "utf8");
+      const source = await readFile(
+        join(workingDirectory, options.compiled.outputFile),
+        "utf8",
+      );
       const dataset = parseWrdata(source, options.compiled.vectors);
       return {
         ...base,
@@ -85,7 +99,7 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
         ...(processResult.stdout.match(/ngspice-\d+/i)?.[0]
           ? { solverVersion: processResult.stdout.match(/ngspice-\d+/i)![0] }
           : {}),
-        dataset
+        dataset,
       };
     } catch (error) {
       return {
@@ -95,8 +109,11 @@ export async function runNgspice(options: RunNgspiceOptions): Promise<Simulation
         completedAt,
         failure: {
           classification: "RESULT_PARSE_ERROR",
-          message: error instanceof Error ? error.message : "Could not parse ngspice results"
-        }
+          message:
+            error instanceof Error
+              ? error.message
+              : "Could not parse ngspice results",
+        },
       };
     }
   } finally {
@@ -118,7 +135,7 @@ function execute(
   args: string[],
   cwd: string,
   timeoutMs: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<ProcessResult> {
   return new Promise((resolve) => {
     const child = spawn(executable, args, { cwd, shell: false });
@@ -156,7 +173,7 @@ function execute(
         stderr,
         timedOut,
         cancelled,
-        ...(processError ? { error: processError } : {})
+        ...(processError ? { error: processError } : {}),
       });
     });
   });

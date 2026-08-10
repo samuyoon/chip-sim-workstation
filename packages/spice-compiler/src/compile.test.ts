@@ -31,8 +31,8 @@ const operatingPoint: SimulationAnalysis = {
   type: "operating_point",
   probes: [
     { id: "rail-voltage", kind: "voltage", target: "rail" },
-    { id: "supply-current", kind: "current", target: "supply" }
-  ]
+    { id: "supply-current", kind: "current", target: "supply" },
+  ],
 };
 
 describe("compileSpice", () => {
@@ -48,7 +48,12 @@ describe("compileSpice", () => {
 
   it("maps generated device lines back to components", () => {
     const result = compileSpice(circuit(), operatingPoint);
-    expect(result.sourceMap.some((entry) => entry.componentId === "supply" && entry.generatedName === "V_supply")).toBe(true);
+    expect(
+      result.sourceMap.some(
+        (entry) =>
+          entry.componentId === "supply" && entry.generatedName === "V_supply",
+      ),
+    ).toBe(true);
   });
 
   it("generates transient analysis directives", () => {
@@ -57,8 +62,10 @@ describe("compileSpice", () => {
       type: "transient",
       stepSeconds: 1e-6,
       stopSeconds: 1e-3,
-      probes: [{ id: "rail", kind: "voltage", target: "rail" }]
+      probes: [{ id: "rail", kind: "voltage", target: "rail" }],
     };
-    expect(compileSpice(circuit(), analysis).netlist).toContain("tran 0.000001 0.001");
+    expect(compileSpice(circuit(), analysis).netlist).toContain(
+      "tran 0.000001 0.001",
+    );
   });
 });

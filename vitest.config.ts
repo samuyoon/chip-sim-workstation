@@ -11,12 +11,12 @@ export default defineConfig({
       "@chip-sim/component-library": `${root}packages/component-library/src/index.ts`,
       "@chip-sim/spice-compiler": `${root}packages/spice-compiler/src/index.ts`,
       "@chip-sim/simulation-results": `${root}packages/simulation-results/src/index.ts`,
-      "@chip-sim/solver-ngspice": `${root}packages/solver-ngspice/src/index.ts`
-    }
+      "@chip-sim/solver-ngspice": `${root}packages/solver-ngspice/src/index.ts`,
+    },
   },
   test: {
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
-    exclude: [".worktrees/**", "dist/**", "out/**", "node_modules/**"]
-  }
+    exclude: [".worktrees/**", "dist/**", "out/**", "node_modules/**"],
+  },
 });

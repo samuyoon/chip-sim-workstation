@@ -7,7 +7,16 @@ export interface ParameterDefinition {
   exclusiveMinimum?: boolean;
 }
 
-export type SpicePrimitive = "ground" | "voltage" | "pulse_voltage" | "current" | "resistor" | "capacitor" | "inductor" | "diode" | "switch";
+export type SpicePrimitive =
+  | "ground"
+  | "voltage"
+  | "pulse_voltage"
+  | "current"
+  | "resistor"
+  | "capacitor"
+  | "inductor"
+  | "diode"
+  | "switch";
 
 export interface ComponentDefinition {
   id: string;
@@ -16,7 +25,11 @@ export interface ComponentDefinition {
   ports: Record<string, { domain: "electrical"; required: boolean }>;
   parameters: Record<string, ParameterDefinition>;
   implementation: { kind: "spice_primitive"; device: SpicePrimitive };
-  provenance: { tier: "foundation" | "catalog" | "custom"; confidence: "high" | "medium" | "low"; source: string };
+  provenance: {
+    tier: "foundation" | "catalog" | "custom";
+    confidence: "high" | "medium" | "low";
+    source: string;
+  };
 }
 
 export type ResolvedParameters = Record<string, ParsedQuantity>;

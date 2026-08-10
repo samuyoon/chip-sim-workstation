@@ -34,13 +34,13 @@ describe("runNgspice", () => {
       type: "transient",
       stepSeconds: 1e-5,
       stopSeconds: 1e-4,
-      probes: [{ id: "midpoint", kind: "voltage", target: "midpoint" }]
+      probes: [{ id: "midpoint", kind: "voltage", target: "midpoint" }],
     });
     const run = await runNgspice({
       compiled,
       analysisId: "startup",
       executablePath: resolve("resources/ngspice/darwin-arm64/ngspice"),
-      timeoutMs: 10_000
+      timeoutMs: 10_000,
     });
     expect(run.status).toBe("completed");
     const values = run.dataset?.signals[0]?.values ?? [];

@@ -10,26 +10,49 @@ export interface SimulationProbe {
 
 export type SimulationAnalysis =
   | { id: string; type: "operating_point"; probes: SimulationProbe[] }
-  | { id: string; type: "dc_sweep"; sourceComponentId: string; start: number; stop: number; step: number; probes: SimulationProbe[] }
-  | { id: string; type: "transient"; stepSeconds: number; stopSeconds: number; probes: SimulationProbe[] };
+  | {
+      id: string;
+      type: "dc_sweep";
+      sourceComponentId: string;
+      start: number;
+      stop: number;
+      step: number;
+      probes: SimulationProbe[];
+    }
+  | {
+      id: string;
+      type: "transient";
+      stepSeconds: number;
+      stopSeconds: number;
+      probes: SimulationProbe[];
+    };
 
 function formatNumber(value: number): string {
   if (!Number.isFinite(value)) throw new Error("SPICE values must be finite");
   return Number(value.toPrecision(15)).toString();
 }
 
-export function compileSpice(circuit: CanonicalCircuit, analysis: SimulationAnalysis): CompiledSpice {
+export function compileSpice(
+  circuit: CanonicalCircuit,
+  analysis: SimulationAnalysis,
+): CompiledSpice {
   const lines = [`* Chip Sim Workstation: ${circuit.name}`];
   const sourceMap: CompiledSpice["sourceMap"] = [];
   const portNets = new Map<string, string>();
   for (const net of circuit.nets) {
-    for (const connection of net.connections) portNets.set(`${connection.componentId}.${connection.portId}`, net.name);
+    for (const connection of net.connections)
+      portNets.set(`${connection.componentId}.${connection.portId}`, net.name);
   }
 
-  const groundComponent = circuit.components.find((component) => component.definition.implementation.device === "ground");
-  const groundNet = groundComponent ? portNets.get(`${groundComponent.id}.reference`) : undefined;
+  const groundComponent = circuit.components.find(
+    (component) => component.definition.implementation.device === "ground",
+  );
+  const groundNet = groundComponent
+    ? portNets.get(`${groundComponent.id}.reference`)
+    : undefined;
   if (!groundNet) throw new Error("Cannot compile a circuit without ground");
-  const node = (netName: string) => (netName === groundNet ? "0" : `n_${spiceIdentifier(netName)}`);
+  const node = (netName: string) =>
+    netName === groundNet ? "0" : `n_${spiceIdentifier(netName)}`;
   const portNode = (componentId: string, portId: string) => {
     const netName = portNets.get(`${componentId}.${portId}`);
     if (!netName) throw new Error(`Missing net for ${componentId}.${portId}`);
@@ -74,9 +97,15 @@ export function compileSpice(circuit: CanonicalCircuit, analysis: SimulationAnal
     if (!line) throw new Error(`Unsupported SPICE primitive ${device}`);
     lines.push(line);
     generatedNames.set(component.id, generatedName);
-    sourceMap.push({ line: lines.length, componentId: component.id, generatedName });
+    sourceMap.push({
+      line: lines.length,
+      componentId: component.id,
+      generatedName,
+    });
     if (device === "switch") {
-      lines.push(`.model CHIP_SWITCH_${id} SW(Ron=${formatNumber(p.onResistance!.siValue)} Roff=${formatNumber(p.offResistance!.siValue)} Vt=${formatNumber(p.threshold!.siValue)} Vh=0)`);
+      lines.push(
+        `.model CHIP_SWITCH_${id} SW(Ron=${formatNumber(p.onResistance!.siValue)} Roff=${formatNumber(p.offResistance!.siValue)} Vt=${formatNumber(p.threshold!.siValue)} Vh=0)`,
+      );
     }
   }
   if (needsDiodeModel) lines.push(".model CHIP_DIODE D");
@@ -84,11 +113,17 @@ export function compileSpice(circuit: CanonicalCircuit, analysis: SimulationAnal
   const vectors = analysis.probes.map((probe) => {
     if (probe.kind === "voltage") {
       const targetNet = circuit.nets.find((net) => net.name === probe.target);
-      if (!targetNet) throw new Error(`Unknown voltage probe net '${probe.target}'`);
-      return { id: probe.id, expression: `v(${node(probe.target)})`, unit: "V" };
+      if (!targetNet)
+        throw new Error(`Unknown voltage probe net '${probe.target}'`);
+      return {
+        id: probe.id,
+        expression: `v(${node(probe.target)})`,
+        unit: "V",
+      };
     }
     const targetName = generatedNames.get(probe.target);
-    if (!targetName) throw new Error(`Unknown current probe component '${probe.target}'`);
+    if (!targetName)
+      throw new Error(`Unknown current probe component '${probe.target}'`);
     return { id: probe.id, expression: `i(${targetName})`, unit: "A" };
   });
 
@@ -96,11 +131,27 @@ export function compileSpice(circuit: CanonicalCircuit, analysis: SimulationAnal
   if (analysis.type === "operating_point") lines.push("op");
   if (analysis.type === "dc_sweep") {
     const sourceName = generatedNames.get(analysis.sourceComponentId);
-    if (!sourceName?.startsWith("V_")) throw new Error("DC sweep source must be a voltage source");
-    lines.push(`dc ${sourceName} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}`);
+    if (!sourceName?.startsWith("V_"))
+      throw new Error("DC sweep source must be a voltage source");
+    lines.push(
+      `dc ${sourceName} ${formatNumber(analysis.start)} ${formatNumber(analysis.stop)} ${formatNumber(analysis.step)}`,
+    );
   }
-  if (analysis.type === "transient") lines.push(`tran ${formatNumber(analysis.stepSeconds)} ${formatNumber(analysis.stopSeconds)}`);
-  lines.push(`wrdata results.dat ${vectors.map((vector) => vector.expression).join(" ")}`, "quit", ".endc", ".end");
+  if (analysis.type === "transient")
+    lines.push(
+      `tran ${formatNumber(analysis.stepSeconds)} ${formatNumber(analysis.stopSeconds)}`,
+    );
+  lines.push(
+    `wrdata results.dat ${vectors.map((vector) => vector.expression).join(" ")}`,
+    "quit",
+    ".endc",
+    ".end",
+  );
 
-  return { netlist: `${lines.join("\n")}\n`, sourceMap, outputFile: "results.dat", vectors };
+  return {
+    netlist: `${lines.join("\n")}\n`,
+    sourceMap,
+    outputFile: "results.dat",
+    vectors,
+  };
 }

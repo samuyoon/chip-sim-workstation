@@ -7,7 +7,10 @@ describe("parseQuantity", () => {
   });
 
   it("normalizes prefixed capacitance", () => {
-    expect(parseQuantity("100 uF", "capacitance")).toEqual({ siValue: 0.0001, unit: "F" });
+    expect(parseQuantity("100 uF", "capacitance")).toEqual({
+      siValue: 0.0001,
+      unit: "F",
+    });
   });
 
   it("rejects a mismatched physical quantity", () => {

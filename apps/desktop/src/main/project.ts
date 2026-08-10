@@ -2,7 +2,10 @@ import { parseBoardYaml } from "@chip-sim/board-schema";
 import { buildCircuit } from "@chip-sim/circuit-core";
 import type { SimulationRun } from "@chip-sim/simulation-results";
 import { runNgspice, type RunNgspiceOptions } from "@chip-sim/solver-ngspice";
-import { compileSpice, type SimulationAnalysis } from "@chip-sim/spice-compiler";
+import {
+  compileSpice,
+  type SimulationAnalysis,
+} from "@chip-sim/spice-compiler";
 import { randomUUID } from "node:crypto";
 import { readFile, realpath, rename, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
@@ -37,7 +40,11 @@ export class ProjectService {
     this.#projectRoot = root;
     const source = await readFile(boardPath, "utf8");
     const validation = await this.validateBoard(source);
-    return { rootPath: root, name: validation.circuit?.name ?? basename(root), source };
+    return {
+      rootPath: root,
+      name: validation.circuit?.name ?? basename(root),
+      source,
+    };
   }
 
   async readBoard(): Promise<string> {
@@ -65,12 +72,21 @@ export class ProjectService {
     const parsed = parseBoardYaml(source);
     if (!parsed.ok) return { ok: false, diagnostics: parsed.diagnostics };
     const built = buildCircuit(parsed.board);
-    if (!built.ok) return { ok: false, diagnostics: [...parsed.diagnostics, ...built.diagnostics] };
-    return { ok: true, diagnostics: [...parsed.diagnostics, ...built.diagnostics], circuit: built.circuit };
+    if (!built.ok)
+      return {
+        ok: false,
+        diagnostics: [...parsed.diagnostics, ...built.diagnostics],
+      };
+    return {
+      ok: true,
+      diagnostics: [...parsed.diagnostics, ...built.diagnostics],
+      circuit: built.circuit,
+    };
   }
 
   async runSimulation(analysis: SimulationAnalysis): Promise<SimulationRun> {
-    if (this.#activeController) throw new Error("A simulation is already running");
+    if (this.#activeController)
+      throw new Error("A simulation is already running");
     const controller = new AbortController();
     this.#activeController = controller;
     const validation = await this.validateBoard(await this.readBoard());
@@ -84,8 +100,10 @@ export class ProjectService {
         failure: {
           classification: "PROJECT_ERROR",
           message: "The board contains errors",
-          details: validation.diagnostics.map((diagnostic) => diagnostic.message).join("\n")
-        }
+          details: validation.diagnostics
+            .map((diagnostic) => diagnostic.message)
+            .join("\n"),
+        },
       };
       this.#onRunUpdate?.(failed);
       this.#activeController = undefined;
@@ -104,8 +122,9 @@ export class ProjectService {
         completedAt: new Date().toISOString(),
         failure: {
           classification: "COMPILATION_ERROR",
-          message: error instanceof Error ? error.message : "SPICE compilation failed"
-        }
+          message:
+            error instanceof Error ? error.message : "SPICE compilation failed",
+        },
       };
       this.#onRunUpdate?.(failed);
       this.#activeController = undefined;
@@ -119,7 +138,7 @@ export class ProjectService {
         status: "cancelled",
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
-        netlist: compiled.netlist
+        netlist: compiled.netlist,
       };
       this.#activeController = undefined;
       this.#onRunUpdate?.(cancelled);
@@ -130,7 +149,7 @@ export class ProjectService {
       analysisId: analysis.id,
       status: "running",
       startedAt: new Date().toISOString(),
-      netlist: compiled.netlist
+      netlist: compiled.netlist,
     };
     this.#onRunUpdate?.(running);
     try {
@@ -139,7 +158,7 @@ export class ProjectService {
         analysisId: analysis.id,
         executablePath: this.#executablePath,
         timeoutMs: 30_000,
-        signal: controller.signal
+        signal: controller.signal,
       });
       if (result.status === "completed") this.lastSuccessfulRun = result;
       this.#onRunUpdate?.(result);
@@ -160,7 +179,11 @@ export class ProjectService {
 
   #assertInside(root: string, candidate: string): void {
     const pathFromRoot = relative(root, candidate);
-    if (pathFromRoot === ".." || pathFromRoot.startsWith(`..${sep}`) || pathFromRoot.startsWith(sep)) {
+    if (
+      pathFromRoot === ".." ||
+      pathFromRoot.startsWith(`..${sep}`) ||
+      pathFromRoot.startsWith(sep)
+    ) {
       throw new Error("Path is outside the project");
     }
   }
