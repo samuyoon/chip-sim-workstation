@@ -1,0 +1,10 @@
+id: supply-sweep
+type: dc_sweep
+sourceComponentId: supply
+start: 6
+stop: 12
+step: 0.25
+probes:
+  - { id: power_rail, kind: voltage, target: power_rail }
+  - { id: driver_output, kind: voltage, target: driver_output }
+  - { id: supply_current, kind: current, target: supply }

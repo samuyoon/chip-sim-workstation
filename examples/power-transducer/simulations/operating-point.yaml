@@ -1,0 +1,7 @@
+id: operating-point
+type: operating_point
+probes:
+  - { id: supply_input, kind: voltage, target: supply_input }
+  - { id: power_rail, kind: voltage, target: power_rail }
+  - { id: driver_output, kind: voltage, target: driver_output }
+  - { id: supply_current, kind: current, target: supply }

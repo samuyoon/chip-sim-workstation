@@ -1,0 +1,83 @@
+version: 1
+name: Power Rail and 40 kHz Transducer Driver
+components:
+  supply:
+    type: foundation.dc_voltage_source
+    parameters: { voltage: 9 V }
+  source_resistance:
+    type: foundation.resistor
+    parameters: { resistance: 1.5 ohm }
+  reservoir:
+    type: foundation.capacitor
+    parameters: { capacitance: 220 uF }
+  indicator_resistor:
+    type: foundation.resistor
+    parameters: { resistance: 1 kohm }
+  indicator_led:
+    type: foundation.diode
+  gate_drive:
+    type: foundation.pulse_voltage_source
+    parameters:
+      low: 0 V
+      high: 5 V
+      delay: 5 us
+      rise: 100 ns
+      fall: 100 ns
+      onTime: 12 us
+      period: 25 us
+  output_switch:
+    type: foundation.voltage_controlled_switch
+    parameters:
+      threshold: 2.5 V
+      onResistance: 200 mohm
+      offResistance: 10 Mohm
+  piezo_motional_resistance:
+    type: foundation.resistor
+    parameters: { resistance: 180 ohm }
+  piezo_motional_inductance:
+    type: foundation.inductor
+    parameters: { inductance: 5 mH }
+  piezo_motional_capacitance:
+    type: foundation.capacitor
+    parameters: { capacitance: 3.3 nF }
+  piezo_static_capacitance:
+    type: foundation.capacitor
+    parameters: { capacitance: 2.2 nF }
+  rail_bleeder:
+    type: foundation.resistive_load
+    parameters: { resistance: 10 kohm }
+  output_return:
+    type: foundation.resistive_load
+    parameters: { resistance: 100 kohm }
+  reference:
+    type: foundation.ground
+connections:
+  - [supply.positive, supply_input]
+  - [supply.negative, ground]
+  - [source_resistance.positive, supply_input]
+  - [source_resistance.negative, power_rail]
+  - [reservoir.positive, power_rail]
+  - [reservoir.negative, ground]
+  - [indicator_resistor.positive, power_rail]
+  - [indicator_resistor.negative, indicator_anode]
+  - [indicator_led.anode, indicator_anode]
+  - [indicator_led.cathode, ground]
+  - [gate_drive.positive, gate]
+  - [gate_drive.negative, ground]
+  - [output_switch.positive, power_rail]
+  - [output_switch.negative, driver_output]
+  - [output_switch.controlPositive, gate]
+  - [output_switch.controlNegative, ground]
+  - [piezo_motional_resistance.positive, driver_output]
+  - [piezo_motional_resistance.negative, piezo_r_l]
+  - [piezo_motional_inductance.positive, piezo_r_l]
+  - [piezo_motional_inductance.negative, piezo_l_c]
+  - [piezo_motional_capacitance.positive, piezo_l_c]
+  - [piezo_motional_capacitance.negative, ground]
+  - [piezo_static_capacitance.positive, driver_output]
+  - [piezo_static_capacitance.negative, ground]
+  - [rail_bleeder.positive, power_rail]
+  - [rail_bleeder.negative, ground]
+  - [output_return.positive, driver_output]
+  - [output_return.negative, ground]
+  - [reference.reference, ground]

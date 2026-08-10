@@ -1,0 +1,15 @@
+id: illustrative.piezo_40khz
+name: Illustrative 40 kHz piezo electrical equivalent
+kind: equivalent_circuit
+elements:
+  motional_resistance: 180 ohm
+  motional_inductance: 5 mH
+  motional_capacitance: 3.3 nF
+  static_capacitance: 2.2 nF
+provenance:
+  confidence: low
+  source: Illustrative values for prototype workflow testing; not a manufacturer model
+limitations:
+  - Represents terminal impedance only.
+  - Does not calculate acoustic pressure, propagation, coupling, heating, or biological effects.
+  - Replace with measured impedance data or a manufacturer model before engineering decisions.

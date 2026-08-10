@@ -1,0 +1,9 @@
+id: startup
+type: transient
+stepSeconds: 0.00000025
+stopSeconds: 0.0001
+probes:
+  - { id: supply_input, kind: voltage, target: supply_input }
+  - { id: power_rail, kind: voltage, target: power_rail }
+  - { id: driver_output, kind: voltage, target: driver_output }
+  - { id: supply_current, kind: current, target: supply }
